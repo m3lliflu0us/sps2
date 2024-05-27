@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steen papier schaar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <span>Steen papier schaar</span>
+    </div>
+    <div class="information-wrapper">
+        <span>Computer: <span id="computer"></span></span>
+        <span>Jouw keuze: <span id="human"></span></span>
+        <span>Uitkomst: <span id="result"></span></span>
+    </div>
+    <div class="btn-wrapper">
+        <button id="steen">Steen</button>
+        <button id="papier">Papier</button>
+        <button id="schaar">Schaar</button>
+    </div>
+
+    <p>Speler Score: <span id="spelerScore">0</span></p>
+    <p>Computer Score: <span id="computerScore">0</span></p>
+    <div id="ervaringBalk" style="width: 100%; height: 20px; background-color: #f4f4f4;">
+        <div id="ervaring" style="height: 20px; background-color: #4CAF50;"></div>
+    </div>
+    
+
+    <script>
+        let spelerKeuze, computerKeuze;
+        let spelerScore = 0, computerScore = 0;
+        let ervaring = 0;
+
+        if (sessionStorage.getItem('ervaring')) {
+            ervaring = parseInt(sessionStorage.getItem('ervaring'));
+        }
+
+        function updateScoreboard() {
+            document.querySelector("#spelerScore").innerHTML = spelerScore;
+            document.querySelector("#computerScore").innerHTML = computerScore;
+            document.querySelector("#ervaring").style.width = ervaring + '%';
+        }
+
+        function computerMaaktKeuze() {
+            const keuzes = ['steen', 'papier', 'schaar'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            computerKeuze = keuzes[randomIndex];
+            document.querySelector("#computer").innerHTML = computerKeuze;
+        }
+
+        function bepaalWinnaar() {
+            switch (spelerKeuze + computerKeuze) {
+                case 'steenschaar':
+                case 'papiersteen':
+                case 'schaarpapier':
+                    document.querySelector("#result").innerHTML = "Je hebt gewonnen!";
+                    spelerScore++;
+                    ervaring += 10;
+                    break;
+                case 'schaarsteen':
+                case 'steenpapier':
+                case 'papierschaar':
+                    document.querySelector("#result").innerHTML = "Je hebt verloren!";
+                    computerScore++;
+                    ervaring += 5;
+                    break;
+                default:
+                    document.querySelector("#result").innerHTML = "Het is gelijkspel!";
+                    ervaring += 2;
+            }
+            ervaring = Math.min(ervaring, 100);
+            sessionStorage.setItem('ervaring', ervaring);
+            updateScoreboard();
+        }
+
+        function maakKeuze(event) {
+            spelerKeuze = event.target.id;
+            document.querySelector("#human").innerHTML = spelerKeuze;
+            computerMaaktKeuze();
+            bepaalWinnaar();
+        }
+
+        document.querySelector("#steen").addEventListener('click', maakKeuze);
+        document.querySelector("#papier").addEventListener('click', maakKeuze);
+        document.querySelector("#schaar").addEventListener('click', maakKeuze);
+
+    </script>
+</body>
+
+</html>
